@@ -1,5 +1,6 @@
 from quasisampler import Quasisampler, Point2D
 from typing import List
+import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
@@ -69,14 +70,19 @@ if __name__ == '__main__':
         mag_factor = float(sys.argv[2])
 
     # Initialize sampler.
-    print("Initializing sampler...")
+    print('Initializing sampler...')
     test = ImageQuasisampler(sys.argv[1], mag_factor)
 
     # Generate points.
-    print("Getting sampling points...")
+    print('Getting sampling points...')
     points = test.get_sampling_points()
 
-    # Print points.
-    print("Printing points...")
-    for point in points:
-        print(f'({point[0]}, {point[1]})')
+    # Plot points.
+    # print("Printing points...")
+    # for point in points:
+    #     print(f'({point[0]}, {point[1]})')
+
+    print('Plotting points...')
+    xy = np.array(points)   # N x 2
+    plt.scatter(xy[:, 0], xy[:, 1], s=1)
+    plt.savefig('out.png')
