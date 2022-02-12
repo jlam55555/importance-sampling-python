@@ -269,7 +269,7 @@ class Quasisampler:
     # Returns the Structural Index (i_s) for a given F-Code.
     @classmethod
     def calc_structural_index(cls, bitsequence: int) -> int:
-        return cls.calc_f_code_value((bitsequence, NUM_STRUCT_INDEX_BITS))
+        return cls.calc_f_code_value(bitsequence, NUM_STRUCT_INDEX_BITS)
 
     # Returns the Importance Index (i_v) for a given importance value.
     # The value returned is \f$ \lfloor n \cdot ({\log_{\phi^2} \sqrt{5} \cdot x}) ~ {\bf mod} ~ 1 \rfloor \f$.
@@ -376,50 +376,46 @@ class Quasisampler:
             if self.tile_type == TileType.TileTypeA:
                 self.children.append(
                     Quasisampler.TileNode(self, TileType.TileTypeB,
-                                          self.p1, self.dir+0, B00, 0, newscale)
-                )
+                                          self.p1, self.dir+0, B00, 0, newscale))
             elif self.tile_type == TileType.TileTypeB:
                 self.children.append(
                     Quasisampler.TileNode(self, TileType.TileTypeA,
-                                          self.p1, self.dir+10, B00, 0, newscale)
-                )
+                                          self.p1, self.dir+10, B00, 0, newscale))
             elif self.tile_type == TileType.TileTypeC:
-                self.children.extend([
-                    Quasisampler.TileNode(self, TileType.TileTypeF, self.p3,
-                                          self.dir+14, B00, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeC, self.p2,
-                                          self.dir+6, B10, 1, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeA,
-                                          self.children[0].p3, self.dir+1, B10, 2, newscale)
-                ])
+                child0 = Quasisampler.TileNode(self, TileType.TileTypeF, self.p3,
+                                               self.dir+14, B00, 0, newscale)
+                child1 = Quasisampler.TileNode(self, TileType.TileTypeC, self.p2,
+                                               self.dir+6, B10, 1, newscale)
+                child2 = Quasisampler.TileNode(self, TileType.TileTypeA,
+                                               child0.p3, self.dir+1, B10, 2, newscale)
+                self.children.extend([child0, child1, child2])
             elif self.tile_type == TileType.TileTypeD:
-                self.children.extend([
-                    Quasisampler.TileNode(self, TileType.TileTypeE, self.p2,
-                                          self.dir+6, B00, 0, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeD,
-                                          self.children[0].p3, self.dir+14, B10, 1, newscale)
-                ])
+                child0 = Quasisampler.TileNode(self, TileType.TileTypeE, self.p2,
+                                               self.dir+6, B00, 0, newscale)
+                child1 = Quasisampler.TileNode(self, TileType.TileTypeD,
+                                               child0.p3, self.dir+14, B10, 1, newscale)
+                self.children.extend([child0, child1])
             elif self.tile_type == TileType.TileTypeE:
-                self.children.extend([
-                    Quasisampler.TileNode(self, TileType.TileTypeC, self.p3,
-                                          self.dir+12, B10, 0, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeE, self.p2,
-                                          self.dir+8, B01, 1, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeF, self.p1,
-                                          self.dir+0, B00, 2, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeA,
-                                          self.children[0].p2, self.dir+7, B10, 3, newscale)
-                ])
+                child0 = Quasisampler.TileNode(self, TileType.TileTypeC, self.p3,
+                                               self.dir+12, B10, 0, newscale)
+                child1 = Quasisampler.TileNode(self, TileType.TileTypeE, self.p2,
+                                               self.dir+8, B01, 1, newscale)
+                child2 = Quasisampler.TileNode(self, TileType.TileTypeF, self.p1,
+                                               self.dir+0, B00, 2, newscale)
+                child3 = Quasisampler.TileNode(self, TileType.TileTypeA,
+                                               child0.p2, self.dir+7, B10, 3, newscale)
+                self.children.extend([child0, child1, child2, child3])
             else:
+                child0 = Quasisampler.TileNode(self, TileType.TileTypeF, self.p3,
+                                               self.dir+12, B01, 0, newscale)
+                child1 = Quasisampler.TileNode(self, TileType.TileTypeE,
+                                               child0.p3, self.dir+0, B00, 1, newscale)
+                child2 = Quasisampler.TileNode(self, TileType.TileTypeD,
+                                               child1.p3, self.dir+8, B10, 2, newscale)
+                child3 = Quasisampler.TileNode(self, TileType.TileTypeA,
+                                               child0.p3, self.dir+15, B01, 3, newscale)
                 self.children.extend([
-                    Quasisampler.TileNode(self, TileType.TileTypeF, self.p3,
-                                          self.dir+12, B01, 0, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeE,
-                                          self.children[0].p3, self.dir+0, B00, 1, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeD,
-                                          self.children[1].p3, self.dir+8, B10, 2, newscale),
-                    Quasisampler.TileNode(self, TileType.TileTypeA,
-                                          self.children[0].p3, self.dir+15, B01, 3, newscale)
+                    child0, child1, child2, child3
                 ])
 
         # Prunes the subdivision tree at this node.
@@ -445,7 +441,7 @@ class Quasisampler:
 
             # Last child case.
             tmp = self.parent
-            while (tmp.level == 0 and tmp.parent_slot == len(tmp.parent.children)-1):
+            while tmp.level != 0 and tmp.parent_slot == len(tmp.parent.children)-1:
                 tmp = tmp.parent
 
             # Last node.
@@ -460,7 +456,7 @@ class Quasisampler:
             tmp = self
             while True:
                 tmp = tmp.next_node()
-                if tmp == None:
+                if tmp is None:
                     return None
                 if tmp.terminal:
                     return tmp
@@ -541,13 +537,8 @@ class Quasisampler:
         # Moves to the next node in the subdivision tree, in depth-first traversal.
         # Returns false iff there is no such node.
         def next(self) -> bool:
-            s = self.shape.next_leaf()
-            if s is not None:
-                self.shape = s
-                return True
-            else:
-                self.shape = s
-                return False
+            self.shape = self.shape.next_leaf()
+            return self.shape is not None
 
         # Checks if there is a next tile, in depth-first traversal.
         def has_next(self) -> bool:
@@ -573,7 +564,7 @@ class Quasisampler:
     # This is a helper function which constrains the incoming points
     # to the region of interest.
     def get_importance_at_bounded(self, pt: Point2D) -> int:
-        if pt[0] >= 0 and pt[0] < self.width and pt[1] >= 0 and pt.y < self.height:
+        if pt[0] >= 0 and pt[0] < self.width and pt[1] >= 0 and pt[1] < self.height:
             return self.get_importance_at(pt)
         else:
             return 0
@@ -587,14 +578,15 @@ class Quasisampler:
             tmp = it.deref()
             it.next()
             tmp.refine()
-            while it is not None:
+            while it.deref() is not None:
                 tmp = it.deref()
                 it.next()
                 tmp.refine()
 
     # Generates the hierarchical structure.
     def build_adaptive_subdivision(self, min_sub_division_level: int = 6) -> None:
-        root = Quasisampler.TileNode(self.width, self.height)
+        self.root = Quasisampler.TileNode.generate_tile_node_from_roi(
+            self.width, self.height)
 
         # Since we are approximating the MAX within each tile by the values at
         # a few key points, we must provide a sufficiently dense initial
@@ -647,14 +639,16 @@ class Quasisampler:
                     pt_displaced = it.ref().get_displaced_sampling_point(importance)
 
                     if (not filter_bounds) or \
-                        (pt_displaced[0] >= 0 and pt_displaced.x <
-                         self.width and pt_displaced.y >= 0 and pt_displaced.y < self.height):
+                        (pt_displaced[0] >= 0 and pt_displaced[0] <
+                         self.width and pt_displaced[1] >= 0 and pt_displaced[1] < self.height):
                         point_list.append(pt_displaced)
 
         # do-while loop
         loop(it)
         while it.next():
             loop(it)
+
+        return point_list
 
     # This virtual function must be implemented in order to use the sampling system.
     # It should return the value of the importance function at the given point.

@@ -1,4 +1,3 @@
-from turtle import width
 from quasisampler import Quasisampler, Point2D
 from typing import List
 import numpy as np
@@ -57,7 +56,7 @@ class ImageQuasisampler(Quasisampler):
 
     def get_importance_at(self, pt: Point2D) -> int:
         # Nearest pixel sampling.
-        return self.data[self.w * (int(self.height - pt[1])) + int(pt[0])]
+        return self.data[self.width * (int(self.height - pt[1])) + int(pt[0])]
 
 
 if __name__ == '__main__':
@@ -70,11 +69,14 @@ if __name__ == '__main__':
         mag_factor = float(sys.argv[2])
 
     # Initialize sampler.
+    print("Initializing sampler...")
     test = ImageQuasisampler(sys.argv[1], mag_factor)
 
     # Generate points.
+    print("Getting sampling points...")
     points = test.get_sampling_points()
 
     # Print points.
+    print("Printing points...")
     for point in points:
         print(f'({point[0]}, {point[1]})')
